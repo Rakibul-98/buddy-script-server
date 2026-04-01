@@ -11,4 +11,8 @@ exports.default = {
     port: process.env.PORT,
     database_url: process.env.DATABASE_URL,
     frontend_url: process.env.FRONTEND_URL,
+    jwt_secret: process.env.JWT_SECRET,
+    jwt_expires_in: process.env.JWT_EXPIRES_IN,
+    google_client_id: process.env.GOOGLE_CLIENT_ID,
+    google_client_secret: process.env.GOOGLE_CLIENT_SECRET,
 };

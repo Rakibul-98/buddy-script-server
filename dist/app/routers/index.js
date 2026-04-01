@@ -6,7 +6,7 @@ const router = (0, express_1.Router)();
 const moduleRouters = [
     {
         path: "/auth",
-        route: auth_routes_1.AuthRouter,
+        route: auth_routes_1.AuthRoutes,
     },
 ];
 moduleRouters.forEach((route) => router.use(route.path, route.route));
