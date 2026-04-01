@@ -5,3 +5,68 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id           String   @id @default(uuid())
+  firstName    String   @map("first_name")
+  lastName     String   @map("last_name")
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  posts    Post[]
+  comments Comment[]
+  likes    Like[]
+
+  @@map("users")
+}
+
+model Post {
+  id         String     @id @default(uuid())
+  authorId   String     @map("author_id")
+  content    String
+  imageUrl   String?    @map("image_url")
+  visibility Visibility @default(PUBLIC)
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+  author   User      @relation(fields: [authorId], references: [id])
+  comments Comment[]
+  likes    Like[]
+
+  @@map("posts")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  postId    String   @map("post_id")
+  authorId  String   @map("author_id")
+  content   String
+  parentId  String?  @map("parent_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  post    Post      @relation(fields: [postId], references: [id])
+  author  User      @relation(fields: [authorId], references: [id])
+  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies Comment[] @relation("CommentReplies")
+  likes   Like[]
+
+  @@map("comments")
+}
+
+model Like {
+  id         String     @id @default(uuid())
+  userId     String     @map("user_id")
+  targetId   String     @map("target_id")
+  targetType TargetType @map("target_type")
+  createdAt  DateTime   @default(now()) @map("created_at")
+
+  user     User      @relation(fields: [userId], references: [id])
+  comments Comment[]
+  posts    Post[]
+
+  @@unique([userId, targetId, targetType])
+  @@map("likes")
+}

@@ -1,0 +1,9 @@
+enum Visibility {
+    PUBLIC
+    PRIVATE
+}
+
+enum TargetType {
+    POST
+    COMMENT
+}
