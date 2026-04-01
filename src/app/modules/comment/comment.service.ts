@@ -35,6 +35,72 @@ const createComment = async (userId: string, payload: any) => {
   return comment;
 };
 
+const getCommentsByPost = async (postId: string) => {
+  return prisma.comment.findMany({
+    where: {
+      postId,
+      parentId: null, // only root comments
+    },
+    include: {
+      author: true,
+      replies: {
+        include: {
+          author: true,
+          replies: true, // nested (1 level deeper)
+        },
+      },
+      _count: {
+        select: { likes: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+};
+
+const updateComment = async (userId: string, id: string, payload: any) => {
+  const comment = await prisma.comment.findUnique({
+    where: { id },
+  });
+
+  if (!comment) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Comment not found");
+  }
+
+  if (comment.authorId !== userId) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Not allowed");
+  }
+
+  return prisma.comment.update({
+    where: { id },
+    data: {
+      content: payload.content,
+    },
+  });
+};
+
+const deleteComment = async (userId: string, id: string) => {
+  const comment = await prisma.comment.findUnique({
+    where: { id },
+  });
+
+  if (!comment) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Comment not found");
+  }
+
+  if (comment.authorId !== userId) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Not allowed");
+  }
+
+  await prisma.comment.delete({
+    where: { id },
+  });
+
+  return null;
+};
+
 export const CommentService = {
   createComment,
+  getCommentsByPost,
+  updateComment,
+  deleteComment,
 };
