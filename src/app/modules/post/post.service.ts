@@ -35,7 +35,63 @@ const getAllPosts = async () => {
   });
 };
 
+const getSinglePost = async (id: string) => {
+  const post = await prisma.post.findUnique({
+    where: { id },
+    include: {
+      author: true,
+      comments: true,
+      likes: true,
+    },
+  });
+
+  if (!post) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Post not found");
+  }
+
+  return post;
+};
+
+const updatePost = async (userId: string, id: string, payload: any) => {
+  const post = await prisma.post.findUnique({ where: { id } });
+
+  if (!post) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Post not found");
+  }
+
+  console.log("Post authorId:", post.authorId);
+  console.log("Request userId:", userId);
+
+  if (post.authorId !== userId) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Not allowed");
+  }
+
+  return prisma.post.update({
+    where: { id },
+    data: payload,
+  });
+};
+
+const deletePost = async (userId: string, id: string) => {
+  const post = await prisma.post.findUnique({ where: { id } });
+
+  if (!post) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Post not found");
+  }
+
+  if (post.authorId !== userId) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Not allowed");
+  }
+
+  await prisma.post.delete({ where: { id } });
+
+  return null;
+};
+
 export const PostService = {
   createPost,
   getAllPosts,
+  getSinglePost,
+  updatePost,
+  deletePost,
 };

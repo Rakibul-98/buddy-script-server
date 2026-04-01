@@ -17,4 +17,15 @@ router.post(
 
 router.get("/", PostController.getAllPosts);
 
+router.get("/:id", PostController.getSinglePost);
+
+router.patch(
+  "/:id",
+  auth(),
+  validate(updatePostSchema),
+  PostController.updatePost,
+);
+
+router.delete("/:id", auth(), PostController.deletePost);
+
 export const PostRoutes = router;
