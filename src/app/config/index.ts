@@ -13,4 +13,8 @@ export default {
   jwt_expires_in: process.env.JWT_EXPIRES_IN as string,
   google_client_id: process.env.GOOGLE_CLIENT_ID as string,
   google_client_secret: process.env.GOOGLE_CLIENT_SECRET as string,
+
+  cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME as string,
+  cloudinary_api_key: process.env.CLOUDINARY_API_KEY as string,
+  cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET as string,
 };

@@ -11,7 +11,7 @@ const register = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
-    message: "Registration successful. Please verify email.",
+    message: "Registration successful.",
     data: result,
   });
 });
