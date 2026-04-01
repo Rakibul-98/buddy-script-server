@@ -39,14 +39,29 @@ const getCommentsByPost = async (postId: string) => {
   return prisma.comment.findMany({
     where: {
       postId,
-      parentId: null, // only root comments
+      parentId: null,
     },
     include: {
       author: true,
+      likes: {
+        include: {
+          user: {
+            select: { id: true, firstName: true, lastName: true },
+          },
+        },
+      },
       replies: {
         include: {
           author: true,
-          replies: true, // nested (1 level deeper)
+          likes: {
+            include: {
+              user: {
+                select: { id: true, firstName: true, lastName: true },
+              },
+            },
+          },
+          _count: { select: { likes: true } },
+          replies: true,
         },
       },
       _count: {

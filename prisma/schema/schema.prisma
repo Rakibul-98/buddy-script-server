@@ -59,14 +59,17 @@ model Comment {
 model Like {
   id         String     @id @default(uuid())
   userId     String     @map("user_id")
-  targetId   String     @map("target_id")
+  postId     String?    @map("post_id")
+  commentId  String?    @map("comment_id")
   targetType TargetType @map("target_type")
   createdAt  DateTime   @default(now()) @map("created_at")
 
-  user     User      @relation(fields: [userId], references: [id])
-  comments Comment[]
-  posts    Post[]
+  user    User     @relation(fields: [userId], references: [id])
+  post    Post?    @relation(fields: [postId], references: [id])
+  comment Comment? @relation(fields: [commentId], references: [id])
 
-  @@unique([userId, targetId, targetType])
+  @@unique([userId, postId, commentId, targetType])
+  @@index([postId])
+  @@index([commentId])
   @@map("likes")
 }

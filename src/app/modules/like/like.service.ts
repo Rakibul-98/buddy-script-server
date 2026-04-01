@@ -5,33 +5,29 @@ import { prisma } from "../../shared/prisma";
 const toggleLike = async (userId: string, payload: any) => {
   const { targetId, targetType } = payload;
 
+  let postId: string | null = null;
+  let commentId: string | null = null;
+
   if (targetType === "POST") {
     const post = await prisma.post.findUnique({
       where: { id: targetId },
     });
-
-    if (!post) {
-      throw new ApiError(httpStatus.NOT_FOUND, "Post not found");
-    }
-  }
-
-  if (targetType === "COMMENT") {
+    if (!post) throw new ApiError(httpStatus.NOT_FOUND, "Post not found");
+    postId = targetId;
+  } else if (targetType === "COMMENT") {
     const comment = await prisma.comment.findUnique({
       where: { id: targetId },
     });
-
-    if (!comment) {
-      throw new ApiError(httpStatus.NOT_FOUND, "Comment not found");
-    }
+    if (!comment) throw new ApiError(httpStatus.NOT_FOUND, "Comment not found");
+    commentId = targetId;
   }
 
-  const existingLike = await prisma.like.findUnique({
+  const existingLike = await prisma.like.findFirst({
     where: {
-      userId_targetId_targetType: {
-        userId,
-        targetId,
-        targetType,
-      },
+      userId,
+      postId,
+      commentId,
+      targetType,
     },
   });
 
@@ -39,17 +35,14 @@ const toggleLike = async (userId: string, payload: any) => {
     await prisma.like.delete({
       where: { id: existingLike.id },
     });
-
-    return {
-      liked: false,
-      message: "Unliked successfully",
-    };
+    return { liked: false, message: "Unliked successfully" };
   }
 
   const like = await prisma.like.create({
     data: {
       userId,
-      targetId,
+      postId,
+      commentId,
       targetType,
     },
   });

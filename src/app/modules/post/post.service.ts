@@ -27,6 +27,13 @@ const getAllPosts = async () => {
   return prisma.post.findMany({
     include: {
       author: true,
+      likes: {
+        include: {
+          user: {
+            select: { id: true, firstName: true, lastName: true },
+          },
+        },
+      },
       _count: {
         select: { comments: true, likes: true },
       },
@@ -40,8 +47,29 @@ const getSinglePost = async (id: string) => {
     where: { id },
     include: {
       author: true,
-      comments: true,
-      likes: true,
+      comments: {
+        include: {
+          author: true,
+          likes: {
+            include: {
+              user: {
+                select: { id: true, firstName: true, lastName: true },
+              },
+            },
+          },
+          _count: { select: { likes: true } },
+        },
+      },
+      likes: {
+        include: {
+          user: {
+            select: { id: true, firstName: true, lastName: true },
+          },
+        },
+      },
+      _count: {
+        select: { comments: true, likes: true },
+      },
     },
   });
 

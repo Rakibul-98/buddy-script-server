@@ -1,17 +1,8 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Template` table. If the table is not empty, all the data it contains will be lost.
-
-*/
 -- CreateEnum
 CREATE TYPE "Visibility" AS ENUM ('PUBLIC', 'PRIVATE');
 
 -- CreateEnum
 CREATE TYPE "TargetType" AS ENUM ('POST', 'COMMENT');
-
--- DropTable
-DROP TABLE "Template";
 
 -- CreateTable
 CREATE TABLE "users" (
