@@ -23,10 +23,24 @@ const createPost = async (userId: string, payload: any, file: any) => {
   return post;
 };
 
-const getAllPosts = async () => {
+const getAllPosts = async (currentUserId?: string) => {
+  const whereClause: any = {};
+
+  if (currentUserId) {
+    whereClause.OR = [
+      { visibility: "PUBLIC" },
+      { visibility: "PRIVATE", authorId: currentUserId },
+    ];
+  } else {
+    whereClause.visibility = "PUBLIC";
+  }
+
   return prisma.post.findMany({
+    where: whereClause,
     include: {
-      author: true,
+      author: {
+        select: { id: true, firstName: true, lastName: true },
+      },
       likes: {
         include: {
           user: {
@@ -42,14 +56,18 @@ const getAllPosts = async () => {
   });
 };
 
-const getSinglePost = async (id: string) => {
+const getSinglePost = async (id: string, currentUserId?: string) => {
   const post = await prisma.post.findUnique({
     where: { id },
     include: {
-      author: true,
+      author: {
+        select: { id: true, firstName: true, lastName: true },
+      },
       comments: {
         include: {
-          author: true,
+          author: {
+            select: { id: true, firstName: true, lastName: true },
+          },
           likes: {
             include: {
               user: {
@@ -75,6 +93,16 @@ const getSinglePost = async (id: string) => {
 
   if (!post) {
     throw new ApiError(httpStatus.NOT_FOUND, "Post not found");
+  }
+
+  const isAuthor = currentUserId === post.authorId;
+  const isPublic = post.visibility === "PUBLIC";
+
+  if (!isPublic && !isAuthor) {
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      "You don't have permission to view this post",
+    );
   }
 
   return post;

@@ -15,9 +15,9 @@ router.post(
   PostController.createPost,
 );
 
-router.get("/", PostController.getAllPosts);
+router.get("/", auth(), PostController.getAllPosts);
 
-router.get("/:id", PostController.getSinglePost);
+router.get("/:id", auth(), PostController.getSinglePost);
 
 router.patch(
   "/:id",

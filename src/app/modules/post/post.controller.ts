@@ -15,8 +15,8 @@ const createPost = catchAsync(async (req: any, res: Response) => {
   });
 });
 
-const getAllPosts = catchAsync(async (_req: Request, res: Response) => {
-  const result = await PostService.getAllPosts();
+const getAllPosts = catchAsync(async (req: any, res: Response) => {
+  const result = await PostService.getAllPosts(req?.user?.id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -26,8 +26,8 @@ const getAllPosts = catchAsync(async (_req: Request, res: Response) => {
   });
 });
 
-const getSinglePost = catchAsync(async (req: Request, res: Response) => {
-  const result = await PostService.getSinglePost(req.params.id);
+const getSinglePost = catchAsync(async (req: any, res: Response) => {
+  const result = await PostService.getSinglePost(req.params.id, req?.user?.id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

@@ -42,7 +42,9 @@ const getCommentsByPost = async (postId: string) => {
       parentId: null,
     },
     include: {
-      author: true,
+      author: {
+        select: { id: true, firstName: true, lastName: true },
+      },
       likes: {
         include: {
           user: {
@@ -52,7 +54,9 @@ const getCommentsByPost = async (postId: string) => {
       },
       replies: {
         include: {
-          author: true,
+          author: {
+            select: { id: true, firstName: true, lastName: true },
+          },
           likes: {
             include: {
               user: {
