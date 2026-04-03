@@ -39,7 +39,7 @@ const getAllPosts = async (currentUserId?: string) => {
     where: whereClause,
     include: {
       author: {
-        select: { id: true, firstName: true, lastName: true },
+        select: { id: true, email: true, firstName: true, lastName: true },
       },
       likes: {
         include: {
