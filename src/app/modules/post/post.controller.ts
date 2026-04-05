@@ -16,7 +16,13 @@ const createPost = catchAsync(async (req: any, res: Response) => {
 });
 
 const getAllPosts = catchAsync(async (req: any, res: Response) => {
-  const result = await PostService.getAllPosts(req?.user?.id);
+  const { limit, cursor } = req.query;
+
+  const result = await PostService.getAllPosts(
+    req?.user?.id,
+    Number(limit) || 3,
+    cursor,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

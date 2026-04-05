@@ -23,7 +23,11 @@ const createPost = async (userId: string, payload: any, file: any) => {
   return post;
 };
 
-const getAllPosts = async (currentUserId?: string) => {
+const getAllPosts = async (
+  currentUserId?: string,
+  limit = 3,
+  cursor?: string,
+) => {
   const whereClause: any = {};
 
   if (currentUserId) {
@@ -35,8 +39,13 @@ const getAllPosts = async (currentUserId?: string) => {
     whereClause.visibility = "PUBLIC";
   }
 
-  return prisma.post.findMany({
+  const posts = await prisma.post.findMany({
     where: whereClause,
+    take: limit + 1,
+    cursor: cursor ? { id: cursor } : undefined,
+    skip: cursor ? 1 : 0,
+    orderBy: { createdAt: "desc" },
+
     include: {
       author: {
         select: { id: true, email: true, firstName: true, lastName: true },
@@ -52,8 +61,19 @@ const getAllPosts = async (currentUserId?: string) => {
         select: { comments: true, likes: true },
       },
     },
-    orderBy: { createdAt: "desc" },
   });
+
+  let nextCursor = null;
+
+  if (posts.length > limit) {
+    const nextItem = posts.pop();
+    nextCursor = nextItem?.id;
+  }
+
+  return {
+    data: posts,
+    nextCursor,
+  };
 };
 
 const getSinglePost = async (id: string, currentUserId?: string) => {
