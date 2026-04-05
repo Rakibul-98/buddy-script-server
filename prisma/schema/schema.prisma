@@ -31,7 +31,7 @@ model Post {
   createdAt  DateTime   @default(now()) @map("created_at")
   updatedAt  DateTime   @updatedAt @map("updated_at")
 
-  author   User      @relation(fields: [authorId], references: [id])
+  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments Comment[]
   likes    Like[]
 
@@ -47,9 +47,9 @@ model Comment {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  post    Post      @relation(fields: [postId], references: [id])
-  author  User      @relation(fields: [authorId], references: [id])
-  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  post    Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author  User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   replies Comment[] @relation("CommentReplies")
   likes   Like[]
 
@@ -64,9 +64,9 @@ model Like {
   targetType TargetType @map("target_type")
   createdAt  DateTime   @default(now()) @map("created_at")
 
-  user    User     @relation(fields: [userId], references: [id])
-  post    Post?    @relation(fields: [postId], references: [id])
-  comment Comment? @relation(fields: [commentId], references: [id])
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post    Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId, commentId, targetType])
   @@index([postId])
