@@ -68,6 +68,8 @@ const loginUser = async (payload: any) => {
   return {
     user: {
       email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
     },
     token,
   };
@@ -96,7 +98,8 @@ const googleLoginUser = async (googleUser: any) => {
   return {
     user: {
       email: user.email,
-      createdAt: user.createdAt,
+      firstName: given_name,
+      lastName: family_name,
     },
     token,
   };
