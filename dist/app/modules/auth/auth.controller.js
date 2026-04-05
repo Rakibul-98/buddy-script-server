@@ -8,29 +8,47 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
+const http_status_1 = __importDefault(require("http-status"));
 const auth_service_1 = require("./auth.service");
 const google_1 = require("../../helper/google");
+const sendResponse_1 = __importDefault(require("../../shared/sendResponse"));
+const catchAsync_1 = __importDefault(require("../../shared/catchAsync"));
+const register = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield auth_service_1.AuthService.registerUser(req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.CREATED,
+        success: true,
+        message: "Registration successful.",
+        data: result,
+    });
+}));
+const login = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield auth_service_1.AuthService.loginUser(req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Login successful",
+        data: result,
+    });
+}));
+const googleLogin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { token } = req.body;
+    const googleUser = yield (0, google_1.verifyGoogleToken)(token);
+    const result = yield auth_service_1.AuthService.googleLoginUser(googleUser);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Google login successful",
+        data: result,
+    });
+}));
 exports.AuthController = {
-    register(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const result = yield auth_service_1.AuthService.register(req.body);
-            res.json(result);
-        });
-    },
-    login(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const result = yield auth_service_1.AuthService.login(req.body);
-            res.json(result);
-        });
-    },
-    googleLogin(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { token } = req.body;
-            const googleUser = yield (0, google_1.verifyGoogleToken)(token);
-            const result = yield auth_service_1.AuthService.googleLogin(googleUser);
-            res.json(result);
-        });
-    },
+    register,
+    login,
+    googleLogin,
 };
